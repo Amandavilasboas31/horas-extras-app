@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="manifest.json">
+<title>Horas Extras PWA</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:900px;margin:auto;padding:20px}
+input,button{padding:10px;margin:4px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid #ccc;padding:8px}
+</style>
+</head>
+<body>
+<h1>Controle de Horas Extras</h1>
+<input type="date" id="data">
+<input type="time" id="entrada">
+<input type="time" id="saida">
+<input type="number" id="intervalo" value="60">
+<button onclick="add()">Adicionar</button>
+<table><thead><tr><th>Data</th><th>Extra</th></tr></thead><tbody id="tb"></tbody></table>
+<script>
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}
+let itens=JSON.parse(localStorage.getItem('he')||'[]');
+function m(t){let[a,b]=t.split(':').map(Number);return a*60+b}
+function render(){
+tb.innerHTML='';
+itens.forEach(i=>tb.innerHTML+=`<tr><td>${i.data}</td><td>${i.extra}</td></tr>`)
+localStorage.setItem('he',JSON.stringify(itens));
+}
+function add(){
+let trab=m(saida.value)-m(entrada.value)-(+intervalo.value||0);
+if(trab<0) trab+=1440;
+let extra=Math.max(0,trab-480);
+itens.push({data:data.value,extra:extra+' min'});
+render();
+}
+render();
+</script>
+</body></html>
